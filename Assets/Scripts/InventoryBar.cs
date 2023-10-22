@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
@@ -19,9 +21,11 @@ public class InventoryBar : MonoBehaviour
     [SerializeField]
     private List<SlotController> slots = new List<SlotController>();
 
+    private SlotController selectedSlot;
+
     void Start()
     {
-        LoadSlots();
+        LoadSlots();       
     }
 
     private void Update()
@@ -39,7 +43,7 @@ public class InventoryBar : MonoBehaviour
         slotHolder.CalculateLayoutInputHorizontal();
         slotHolder.SetLayoutHorizontal();
         slotHolder.SetLayoutVertical();
-        slots[0].IsSelected = true;
+        SelectSlot(1);
     }
 
     private void CreateSlot(int number)
@@ -121,34 +125,50 @@ public class InventoryBar : MonoBehaviour
 
     }
     
-    private void SelectSlot(int slotNumber)
-    {
-        slots.ForEach(slot => slot.IsSelected = slot.SlotNumber == slotNumber);
-    }
-
     private void HandleMouseSelection()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!Input.GetMouseButtonDown(0))
         {
-            // Raycast a partir do mouse para determinar o objeto clicado.
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            return;
+        }
 
-            if (Physics.Raycast(ray, out hit))
+        GraphicRaycaster raycaster = GetComponentInParent<GraphicRaycaster>();
+        PointerEventData clickData = new PointerEventData(EventSystem.current);
+        List<RaycastResult> clickResults = new List<RaycastResult>(); ;
+
+        clickData.position = Input.mousePosition;
+        clickResults.Clear();
+        raycaster.Raycast(clickData, clickResults);
+
+        //clickedElements = (from result in clickResults select result.gameObject).ToList();
+
+        // Foreach version
+        SlotController slot = null;
+        foreach (RaycastResult result in clickResults)
+        {
+            Debug.Log("clicou em: " + result.gameObject.name);
+            if (result.gameObject.GetComponentInParent<SlotController>() != null)
             {
-                // Verifique se o objeto clicado é um slot do inventário.
-                SlotController slot = hit.collider.GetComponent<SlotController>();
-
-                if (slot != null)
-                {
-                    // Slot do inventário clicado. Atualize o slot selecionado.
-
-                    Debug.Log("Slot " + (slot.SlotNumber) + " selecionado.");
-                }
-
-
+                slot = result.gameObject.GetComponentInParent<SlotController>();
+                Debug.Log("Achou slot");
+                break;
             }
         }
 
+        if (slot == null)
+        {
+            return;
+        }
+
+        SelectSlot(slot.SlotNumber);
+    }
+
+    private void SelectSlot(int slotNumber)
+    {
+        slots.ForEach(slot => {
+            slot.IsSelected = slot.SlotNumber == slotNumber;
+            if (slot.IsSelected)
+                selectedSlot = slot;
+        });
     }
 }
