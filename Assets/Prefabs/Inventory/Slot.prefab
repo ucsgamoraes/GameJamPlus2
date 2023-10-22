@@ -56,6 +56,7 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: 83c4fa6721bb1e941912b412720ddeb9, type: 3}
   slotNumberText: {fileID: 8982359026000578331}
   background: {fileID: 862157150859814787}
+  itemHolder: {fileID: 4809896687625969373}
 --- !u!1 &862157150859814787
 GameObject:
   m_ObjectHideFlags: 0
@@ -183,7 +184,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1281824816262355873}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
