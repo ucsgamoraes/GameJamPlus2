@@ -7,6 +7,8 @@ public class BulletBehaviour : MonoBehaviour
     public float speed = 10f;  // Adjust the bullet speed as needed
     public int damage = 10;  // Adjust the bullet speed as needed
     public LayerMask enemyLayer;  // The layer that represents your enemy objects
+    public GameObject hitPrefab;
+    public float holeOffset;
 
     private void Update()
     {
@@ -31,6 +33,9 @@ public class BulletBehaviour : MonoBehaviour
             {
                 enemy.TakeDamage(damage);
             }
+
+            GameObject a = Instantiate(hitPrefab, transform.position + transform.up * holeOffset, transform.rotation);
+            a.transform.parent = other.transform;
 
             // Destroy the bullet on collision
             Destroy(gameObject);

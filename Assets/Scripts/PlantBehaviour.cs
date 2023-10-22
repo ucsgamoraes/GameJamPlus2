@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 public class PlantBehaviour : MonoBehaviour
@@ -29,6 +30,7 @@ public class PlantBehaviour : MonoBehaviour
     public float bulletOffset;
     public Transform plantHead;
     public GameObject explosion;
+    public UnityEvent onDamage;
 
     private void Start()
     {
@@ -66,6 +68,7 @@ public class PlantBehaviour : MonoBehaviour
         if (lifePoints <= 0) { return; }
 
         lifePoints -= amount;
+        onDamage.Invoke();
 
         if (lifePoints <= 0) { OnDead(); }
 

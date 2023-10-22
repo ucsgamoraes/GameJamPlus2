@@ -35,19 +35,16 @@ public class EnemyManager : MonoBehaviour
 
     void SpawnEnemy()
     {
-        if (spawnedCount < spawnQuantity)
+        Vector2 randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+
+        // Create an enemy at the random spawn point.
+        GameObject newEnemy = Instantiate(enemyPrefab, randomSpawnPoint, Quaternion.identity);
+        spawnedEnemies.Add(newEnemy);
+        spawnedCount++;
+
+        if (spawnedCount >= spawnQuantity)
         {
-            Vector2 randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-
-            // Create an enemy at the random spawn point.
-            GameObject newEnemy = Instantiate(enemyPrefab, randomSpawnPoint, Quaternion.identity);
-            spawnedEnemies.Add(newEnemy);
-            spawnedCount++;
-
-            if (spawnedCount >= spawnQuantity)
-            {
-                CancelInvoke("SpawnEnemy"); // Stop spawning when the desired quantity is reached.
-            }
+            CancelInvoke("SpawnEnemy"); // Stop spawning when the desired quantity is reached.
         }
     }
 }
