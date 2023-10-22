@@ -27,6 +27,8 @@ public class PlantBehaviour : MonoBehaviour
     public float cooldownTimer;
     public float shootRange;
     public float bulletOffset;
+    public Transform plantHead;
+    public GameObject explosion;
 
     private void Start()
     {
@@ -56,7 +58,23 @@ public class PlantBehaviour : MonoBehaviour
     void Shoot (Vector2 dir)
     {
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        Instantiate(fireBall, (Vector2) transform.position + dir.normalized  * bulletOffset, Quaternion.AngleAxis(angle - 90, Vector3.forward));
+        Instantiate(fireBall, (Vector2) plantHead.position + dir.normalized * bulletOffset, Quaternion.AngleAxis(angle - 90, Vector3.forward));
+    }
+
+    public void TakeDamage(int amount)
+    {
+        if (lifePoints <= 0) { return; }
+
+        lifePoints -= amount;
+
+        if (lifePoints <= 0) { OnDead(); }
+
+    }
+
+    public void OnDead()
+    {
+        Instantiate(explosion, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     // Update is called once per frame
@@ -64,6 +82,7 @@ public class PlantBehaviour : MonoBehaviour
     {
         float enemyDist = 0.0f;
         Vector2 enemy = GetClosestEnemy(ref enemyDist);
+
         cooldownTimer += Time.deltaTime;
 
         if (enemy == Vector2.zero)
@@ -71,7 +90,7 @@ public class PlantBehaviour : MonoBehaviour
             return;
         }
 
-        Vector2 shootDir = enemy - (Vector2) transform.position;
+        Vector2 shootDir = enemy - (Vector2)plantHead.position;
 
         if(enemyDist < shootRange)
         {
@@ -82,9 +101,12 @@ public class PlantBehaviour : MonoBehaviour
             }
         }
 
-        float angle = Vector2.SignedAngle(shootDir, Vector2.right) - offset;
-        Debug.Log(angle);
-        for (int i = 0; i < dirs.Count; i++)
+        float angle = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
+        plantHead.rotation = Quaternion.AngleAxis(angle - offset, Vector3.forward);
+        Debug.DrawRay(transform.position, shootDir, Color.yellow);
+
+
+        /*for (int i = 0; i < dirs.Count; i++)
         {
             if (angle > dirs[i].from && angle < dirs[i].to)
             {
@@ -96,6 +118,6 @@ public class PlantBehaviour : MonoBehaviour
 
                 spriteRenderer.sprite = dirs[i].sprite;
             }
-        }
+        }*/
     }
 }

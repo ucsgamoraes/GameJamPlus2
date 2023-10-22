@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,14 +17,17 @@ public class PlantManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Update()
+    {
+
+    }
     public void InstantiatePlant (Vector2 pos)
     {
         if (seedsAmount <= 0) return;
         if (instantiatedPlants.ContainsKey(pos)) return;
 
-        Instantiate(plant, pos, Quaternion.identity);
-        instantiatedPlants.Add(pos, plant);
-        Debug.Log(instantiatedPlants);
+        GameObject newPlant = Instantiate(plant, pos, Quaternion.identity);
+        instantiatedPlants.Add(pos, newPlant);
         seedsAmount--;
     }
 }

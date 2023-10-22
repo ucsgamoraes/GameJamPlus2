@@ -56,12 +56,12 @@ public class InventoryBar : MonoBehaviour
             rectTransform = slot.AddComponent<RectTransform>();
         }
 
-        // ajuste do tamanho e posição do slot
+        // ajuste do tamanho e posiï¿½ï¿½o do slot
         rectTransform.sizeDelta = new Vector2(60, 60);
         rectTransform.anchoredPosition = Vector2.zero;
         rectTransform.localScale = Vector2.one;
 
-        // atualiza o número do slot
+        // atualiza o nï¿½mero do slot
         slot.GetComponent<SlotController>().SlotNumber = number;
         slots.Add(slot.GetComponent<SlotController>());
     }
@@ -160,14 +160,14 @@ public class InventoryBar : MonoBehaviour
         SlotController currentSlot = selectedSlot;
         selectedSlot = null;
 
-        // desativa todos os slots e deixa ativo só clicado
+        // desativa todos os slots e deixa ativo sï¿½ clicado
         slots.ForEach(slot => {
             slot.IsSelected = slot.SlotNumber == slotNumber;
             if (slot.IsSelected)
                 selectedSlot = slot;
         });
 
-        // caso não exista slot com o número digitado, mantêm o que já tinha
+        // caso nï¿½o exista slot com o nï¿½mero digitado, mantï¿½m o que jï¿½ tinha
         if (selectedSlot == null)
         {
             selectedSlot = currentSlot;
