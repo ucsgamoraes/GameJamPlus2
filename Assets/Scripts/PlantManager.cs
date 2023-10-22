@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
 
 public class PlantManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class PlantManager : MonoBehaviour
     public AudioClip digSound;
     private AudioSource audioSource;
     public int seedsAmount = 8;
+    public TMPro.TextMeshProUGUI textMeshPro;
 
     public static PlantManager Instance;
 
@@ -22,11 +24,12 @@ public class PlantManager : MonoBehaviour
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        UpdateText();
     }
 
-    private void Update()
+    private void UpdateText()
     {
-
+        textMeshPro.text = "Seeds: " + seedsAmount.ToString();
     }
 
     public void InstantiatePlant (Vector2 pos)
@@ -38,6 +41,8 @@ public class PlantManager : MonoBehaviour
         audioSource.PlayOneShot(digSound);
 
         instantiatedPlants.Add(pos, newPlant);
+
         seedsAmount--;
+        UpdateText();
     }
 }
