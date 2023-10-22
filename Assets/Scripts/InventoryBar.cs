@@ -39,7 +39,6 @@ public class InventoryBar : MonoBehaviour
         slotHolder.CalculateLayoutInputHorizontal();
         slotHolder.SetLayoutHorizontal();
         slotHolder.SetLayoutVertical();
-        slots[0].IsSelected = true;
     }
 
     private void CreateSlot(int number)

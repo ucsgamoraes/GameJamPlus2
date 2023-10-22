@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyBehaviour : MonoBehaviour
@@ -7,23 +8,29 @@ public class EnemyBehaviour : MonoBehaviour
     public float speed = .01f;
     public float range;
     public LayerMask mask;
-    public float timer;
     public float hitInterval;
     public int lifePoints;
+    public float attackTimer;
+    public float attackCooldown;
     public Transform house;
+    public Transform sprite;
+    public float offset2;
+    public int hitDamage;
+    public GameObject explosion;
 
-    Vector2 GetClosestPlant()
+    Transform GetClosestPlant()
     {
         float minDist = float.MaxValue;
-        Vector2 minPlant = Vector2.zero;
+        Transform minPlant = null;
 
         foreach (var plant in PlantManager.Instance.instantiatedPlants)
         {
+            if(plant.Value == null) continue;
             float currentDist = Vector2.Distance(transform.position, plant.Key);
             if (currentDist < minDist)
             {
                 minDist = currentDist;
-                minPlant = plant.Key;
+                minPlant = plant.Value.transform;
             }
         }
         return minPlant;
@@ -41,6 +48,8 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void OnDead ()
     {
+        PlantManager.Instance.instantiatedPlants.Remove(transform.position);
+        Instantiate(explosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
@@ -52,33 +61,71 @@ public class EnemyBehaviour : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        timer += Time.deltaTime;
-        Vector3 target = GetClosestPlant();
-        Vector2 diff = transform.position - target;
+        attackTimer += Time.deltaTime;
+        Transform target = GetClosestPlant();
+        Vector2 diff = Vector2.zero;
+
+        if (house == null) return;
+
         Vector2 diffHouse = transform.position - house.position;
-        Debug.Log(target);
-        if(diffHouse.sqrMagnitude < diff.sqrMagnitude || PlantManager.Instance.instantiatedPlants.Count == 0)
+
+        if (target != null)
         {
-            target = house.position;
+            diff = transform.position - target.position;
+
+            if (diffHouse.sqrMagnitude < diff.sqrMagnitude)
+            {
+                target = house;
+                diff = diffHouse;
+            }
+        }
+        else
+        {
+            target = house;
             diff = diffHouse;
         }
 
-        transform.position -= transform.TransformDirection(diff.normalized) * speed * Time.deltaTime;
+        if (target == null) return;
 
-        Vector3 direction = target - transform.position;
+        Vector3 direction = target.position - transform.position;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, range, mask);
 
-        if (hit.collider)
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        sprite.rotation = Quaternion.AngleAxis(angle - offset2, Vector3.forward);
+
+        if (diff.sqrMagnitude > range)
         {
-            if (hit.collider.CompareTag("Plant"))
+            transform.position -= transform.TransformDirection(diff.normalized) * speed * Time.deltaTime;
+        }
+
+        if (attackTimer > attackCooldown)
+        {
+            if (hit.collider)
             {
-                AttackPlant();
+                PlantBehaviour plant = hit.collider.GetComponent<PlantBehaviour>();
+                HouseBehaviour house = hit.collider.GetComponent<HouseBehaviour>();
+
+                Debug.Log(hit.collider);
+                if (plant != null)
+                {
+                    AttackPlant(plant);
+                }else if (house != null)
+                {
+                    AttackHouse(house);
+                }
             }
         }
     }
 
-    void AttackPlant()
+    void AttackHouse(HouseBehaviour house)
     {
-        Debug.Log("Attack Plant");
+        house.TakeDamage(hitDamage);
+        attackTimer = 0.0f;
+
+    }
+    void AttackPlant(PlantBehaviour plant)
+    {
+        plant.TakeDamage(hitDamage);
+        attackTimer = 0.0f;
     }
 }
