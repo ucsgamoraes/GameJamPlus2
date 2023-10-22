@@ -1,11 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class InventoryBar : MonoBehaviour
 {
@@ -140,9 +136,6 @@ public class InventoryBar : MonoBehaviour
         clickResults.Clear();
         raycaster.Raycast(clickData, clickResults);
 
-        //clickedElements = (from result in clickResults select result.gameObject).ToList();
-
-        // Foreach version
         SlotController slot = null;
         foreach (RaycastResult result in clickResults)
         {
@@ -150,7 +143,6 @@ public class InventoryBar : MonoBehaviour
             if (result.gameObject.GetComponentInParent<SlotController>() != null)
             {
                 slot = result.gameObject.GetComponentInParent<SlotController>();
-                Debug.Log("Achou slot");
                 break;
             }
         }
@@ -165,10 +157,23 @@ public class InventoryBar : MonoBehaviour
 
     private void SelectSlot(int slotNumber)
     {
+        SlotController currentSlot = selectedSlot;
+        selectedSlot = null;
+
+        // desativa todos os slots e deixa ativo só clicado
         slots.ForEach(slot => {
             slot.IsSelected = slot.SlotNumber == slotNumber;
             if (slot.IsSelected)
                 selectedSlot = slot;
         });
+
+        // caso não exista slot com o número digitado, mantêm o que já tinha
+        if (selectedSlot == null)
+        {
+            selectedSlot = currentSlot;
+            selectedSlot.IsSelected = true;
+        }
+
+        Debug.Log("Slot selecionado: " + selectedSlot.SlotNumber);
     }
 }
