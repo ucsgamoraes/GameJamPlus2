@@ -23,6 +23,7 @@ public class PlantManager : MonoBehaviour
 
         Instantiate(plant, pos, Quaternion.identity);
         instantiatedPlants.Add(pos, plant);
+        Debug.Log(instantiatedPlants);
         seedsAmount--;
     }
 }

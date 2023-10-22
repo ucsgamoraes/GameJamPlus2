@@ -10,6 +10,7 @@ public class EnemyBehaviour : MonoBehaviour
     public float timer;
     public float hitInterval;
     public int lifePoints;
+    public Transform house;
 
     Vector2 GetClosestPlant()
     {
@@ -43,28 +44,41 @@ public class EnemyBehaviour : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private void Start()
+    {
+        house = GameObject.FindGameObjectWithTag("House").transform;
+    }
 
     // Update is called once per frame
     void FixedUpdate()
     {
         timer += Time.deltaTime;
-
         Vector3 target = GetClosestPlant();
         Vector2 diff = transform.position - target;
-
-        if( diff.sqrMagnitude > range )
+        Vector2 diffHouse = transform.position - house.position;
+        Debug.Log(target);
+        if(diffHouse.sqrMagnitude < diff.sqrMagnitude || PlantManager.Instance.instantiatedPlants.Count == 0)
         {
-            transform.position -= transform.TransformDirection(diff.normalized) * speed;
+            target = house.position;
+            diff = diffHouse;
         }
 
+        transform.position -= transform.TransformDirection(diff.normalized) * speed * Time.deltaTime;
+
         Vector3 direction = target - transform.position;
-        Debug.DrawLine(transform.position, transform.position + direction* 5);
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, range, mask);
 
         if (hit.collider)
         {
-            // You can perform actions here, like attacking the plant.
-            Debug.Log("Plant detected!");
+            if (hit.collider.CompareTag("Plant"))
+            {
+                AttackPlant();
+            }
         }
+    }
+
+    void AttackPlant()
+    {
+        Debug.Log("Attack Plant");
     }
 }

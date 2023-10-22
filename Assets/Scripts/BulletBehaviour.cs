@@ -11,12 +11,13 @@ public class BulletBehaviour : MonoBehaviour
     private void Update()
     {
         MoveBullet();
+        Destroy(gameObject, 5f);
     }
 
     private void MoveBullet()
     {
         // Move the bullet forward
-        transform.Translate(Vector2.down * speed * Time.deltaTime);
+        transform.Translate(Vector2.up * speed * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -118,6 +118,12 @@ MonoBehaviour:
   offset: 0
   spriteRenderer: {fileID: 8067751319787908823}
   lifePoints: 0
+  snapedShootDir: {x: 0, y: 0}
+  fireBall: {fileID: 36737243969489116, guid: a282947a5f0f50a479bb34e5daa0e719, type: 3}
+  shotCooldown: 1
+  cooldownTimer: 0
+  shootRange: 20
+  bulletOffset: 1.46
 --- !u!61 &4483840936222397935
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -40,6 +40,7 @@ public class PlantBehaviour : MonoBehaviour
 
         foreach (var enemy in EnemyManager.Instance.spawnedEnemies)
         {
+            if (enemy == null) continue;
             float currentDist = Vector2.Distance(transform.position, enemy.transform.position);
             if (currentDist < minDist)
             {
@@ -55,7 +56,7 @@ public class PlantBehaviour : MonoBehaviour
     void Shoot (Vector2 dir)
     {
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        Instantiate(fireBall, (Vector2) transform.position + dir.normalized  * bulletOffset, Quaternion.AngleAxis(angle, Vector3.forward));
+        Instantiate(fireBall, (Vector2) transform.position + dir.normalized  * bulletOffset, Quaternion.AngleAxis(angle - 90, Vector3.forward));
     }
 
     // Update is called once per frame
@@ -82,7 +83,7 @@ public class PlantBehaviour : MonoBehaviour
         }
 
         float angle = Vector2.SignedAngle(shootDir, Vector2.right) - offset;
-
+        Debug.Log(angle);
         for (int i = 0; i < dirs.Count; i++)
         {
             if (angle > dirs[i].from && angle < dirs[i].to)
